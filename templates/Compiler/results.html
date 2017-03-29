@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+	<title>{{ problem.title }}</title>
+
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.css" />
+
+    <style type="text/css" media="screen">
+        h4,h5,p,a,.time{
+            font-family: 'Ubuntu', sans-serif;
+
+        }
+    #editor {
+        position: absolute; /* Added */
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+   }
+</style>
+
+</head>
+<body>
+<form>
+
+</form>
+
+
+<script>
+    $(document).ready(function() {
+
+            $('#rForm').submit(function(){
+            $(this).ajaxSubmit(load_options);
+
+         return false;
+        });
+
+            $('#rForm').submit();
+    });
+ var load_options = {
+{#        target:        '#output3',   // target element(s) to be updated with server response#}
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:      rFn,  // post-submit callback
+         error : dispError
+
+            };
+
+    function  rFn(responseText, statusText, xhr, $form) {
+
+    }
+     function showRequest(formData, jqForm, options) {
+         return true;
+     }
+</script>
+</body>
+</html>

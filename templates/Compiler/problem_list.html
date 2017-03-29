@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+
+	<title>Contest</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.css" />
+
+    <style type="text/css" media="screen">
+        h4,h5,p,a{
+            font-family: 'Ubuntu', sans-serif;
+
+        }
+        </style>
+
+</head>
+<body>
+<form id="attempt-form" method="POST">
+{% csrf_token %}
+<div class="panel-body">
+<div class="jumbotron" style="background-color: whitesmoke">
+	<div class="container">
+
+       <input name="prob_s" id="prob_s" hidden >
+
+        <ol align="center" class="list-group">
+        {% for prog  in progs %}
+            <li class="list-group-item center-block text-center"><a href="progList/{{ prog.id }}">{{ prog.title }}</a>
+
+<br>
+    <button type="submit" style="font-family: 'Ubuntu', sans-serif;" class="button"  name="attempt" onclick="javascript:sendTR({{ prog.id }})" data-prob="{{ prog.id }}" >Attempt</button>
+<br>
+               {{ prog.timerproblem_set.all }}
+
+        {% endfor %}
+    </ol>
+
+    </div>
+</div>
+	</div>
+</form>
+<p id="errors"></p>
+</body>
+</html>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+<script>
+    var signup_options = {
+{#        target:        '#output3',   // target element(s) to be updated with server response#}
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:       successful,  // post-submit callback
+         error : dispError
+
+            };
+
+    function  sendTR(prob_id) {
+         $('#prob_s').val(prob_id);
+        return true;
+    }
+    function showRequest(formData, jqForm, options) {
+{#        var text = $('.ace_text-layer').text();#}
+
+        console.log(formData);
+        console.log(jqForm);
+        console.log(options);
+         options.url ='http://127.0.0.1:8000/hashitCompile/api/start/'+ $('#prob_s').val();
+        return true;
+    }
+
+    function  successful(responseText, statusText, xhr, $form) {
+
+        console.log(responseText);
+        console.log(statusText);
+        console.log(xhr);
+        console.log($form);
+        window.location.href=  window.location.href +'/'+ responseText.id;
+    }
+    function  dispError() {
+        $('#errors').html('Encountered errors');
+    }
+
+     $('#attempt-form').submit(function(){
+            $(this).ajaxSubmit(signup_options);
+
+         return false;
+     });
+</script>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+	<title>{{ problem.title }}</title>
+
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.css" />
+
+    <style type="text/css" media="screen">
+        h4,h5,p,a,.time{
+            font-family: 'Ubuntu', sans-serif;
+
+        }
+    #editor {
+        position: absolute; /* Added */
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+   }
+</style>
+
+</head>
+<body>
+
+<nav class = "navbar navbar-inverse" role = "navigation">
+
+   <div class = "navbar-header">
+      <a class = "navbar-brand" href = "#">Hashit Compile</a>
+   </div>
+
+   <div>
+      <ul class = "nav navbar-nav">
+         <li class ><a href = "#">ingenuITy</a></li>
+         <li><a href = "#">IDE</a></li>
+
+         <li><a href = "#">Contest</a></li>
+
+      </ul>
+   </div>
+
+</nav>
+
+<span class="success label"><h4>{{ problem.title }}</h4></span>
+<h5>Time Elapsed :<div class="time"></div></h5>
+    {{  problem.description| linebreaks }}
+<div class="jumbotron"><h4>Problem Statement</h4>
+{#{% autoescape on %}#}
+
+
+{#{% endautoescape %}#}
+    </div>
+<div class="callout primary"><p id="output3"></p><br>
+<p id="errors"></p>
+    </div>
+<form  id="compileForm" method="POST" >
+    {% csrf_token %}
+    <div class="form-group">
+	Prog Name :<input name='prog_name' >
+	<select name='language'>
+
+		<option value="C">C</option>
+		<option value="Java">Java</option>
+	</select>
+	<br>
+        <div width="75%">
+        <textarea name='program' id='program' rows="30" cols="100" hidden ></textarea>
+    <textarea name='program1' id='program1' rows="30" cols="100" ></textarea>
+        </div>
+        <h5>Input</h5>
+    <textarea name='prog_input' id='prog_input' ></textarea>
+	<br>
+        </div>
+    <input name="prob" id="prob" hidden value='{{ problem.id }}'>
+    <input name="prog_type" id="prog_type" hidden>
+{#    <button type="submit" class="btn btn-primary" onclick="javascript:compile1()" name="compile" >Compile</button>#}
+{#    <button type="submit" class="btn btn-primary" onclick="javascript:run1()" name="run" >Run</button>#}
+{#    <button type="submit" class="btn btn-primary" onclick="javascript:submit1()" name="submit" >Submit</button>#}
+    <button type="submit" style="font-family: 'Ubuntu', sans-serif;" class="warning button" onclick="javascript:save1()" name="compile" >Save</button>
+     <button type="submit" style="font-family: 'Ubuntu', sans-serif;" class="warning button" onclick="javascript:compile1()" name="compile" >Compile</button>
+    <button type="submit" style="font-family: 'Ubuntu', sans-serif;" class="button" onclick="javascript:run1()" name="run" >Run</button>
+    <button type="submit"  style="font-family: 'Ubuntu', sans-serif;" class="success button" onclick="javascript:submit1()" name="submit" >Submit</button>
+{#    #}
+{#    #}
+</form>
+
+<form  id="timerForm" method="POST" action="time/{{ problem.id }}">
+    {% csrf_token %}
+    <input name="prob" id="prob" hidden value='{{ problem.id }}'>
+    </form>
+{#<h4>Test Cases</h4>#}
+{#<p>#}
+{#    {% for area in problem.tests.all %}{{ area.prog_input }}<br/>{% endfor %}#}
+{#</p>#}
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+<script>
+    var editor = ace.edit("program1");
+
+
+    editor.setTheme("ace/theme/monokai");
+
+    editor.setOptions({
+    maxLines: 15,
+        fontSize: "15px",
+{#        fontFamily: 'Ubuntu'#}
+});
+    editor.getSession().setMode("ace/mode/c_cpp");
+
+{#    document.getElementsByClassName('ace')[0].style.fontSize='15px';#}
+
+{#    hljs.highlightBlock()#}
+    var signup_options = {
+{#        target:        '#output3',   // target element(s) to be updated with server response#}
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:       successful,  // post-submit callback
+         error : dispError
+
+            };
+
+    var load_options = {
+{#        target:        '#output3',   // target element(s) to be updated with server response#}
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:       timerFn,  // post-submit callback
+         error : dispError
+
+            };
+
+    $(document).ready(function() {
+
+{#            var str =$('#pd').val();#}
+{#            str.replace("\n","&#10");#}
+{#            $('#pd').val(str);#}
+
+            $('#timerForm').submit(function(){
+            $(this).ajaxSubmit(load_options);
+
+         return false;
+        });
+
+            $('#timerForm').submit();
+    });
+    var startTime =0;
+
+    function display(){
+         var endTime = new Date();
+
+        var timeDiff = endTime - startTime;
+
+          timeDiff /= 1000;
+
+    // get seconds
+    var seconds = Math.round(timeDiff % 60);
+
+    // remove seconds from the date
+    timeDiff = Math.floor(timeDiff / 60);
+
+    // get minutes
+    var minutes = Math.round(timeDiff % 60);
+
+    // remove minutes from the date
+    timeDiff = Math.floor(timeDiff / 60);
+
+    // get hours
+    var hours = Math.round(timeDiff % 24);
+
+    // remove hours from the date
+    timeDiff = Math.floor(timeDiff / 24);
+
+    // the rest of timeDiff is number of days
+    var days = timeDiff;
+
+    $(".time").text( hours + ":" + minutes + ":" + seconds);
+    setTimeout(display, 1000);
+    }
+    function timerFn(responseText, statusText, xhr, $form){
+
+{#        var hr = responseText.hr;#}
+{#        var min = responseText.min;#}
+{#        var sec = responseText.sec;#}
+
+        var endTime = new Date();
+{##}
+{#        hr = endTime.getHours() - hr;#}
+{#        min = endTime.getMinutes() - min;#}
+{#        sec = endTime.getSeconds() - sec;#}
+{##}
+{#        $(".time").text( hr + ":" + min + ":" + sec);#}
+{#        setTimeout(display, 1000);#}
+
+            startTime = responseText.tt;
+          var timeDiff = endTime - responseText.tt;
+
+          timeDiff /= 1000;
+
+    // get seconds
+    var seconds = Math.round(timeDiff % 60);
+
+    // remove seconds from the date
+    timeDiff = Math.floor(timeDiff / 60);
+
+    // get minutes
+    var minutes = Math.round(timeDiff % 60);
+
+    // remove minutes from the date
+    timeDiff = Math.floor(timeDiff / 60);
+
+    // get hours
+    var hours = Math.round(timeDiff % 24);
+
+    // remove hours from the date
+    timeDiff = Math.floor(timeDiff / 24);
+
+    // the rest of timeDiff is number of days
+    var days = timeDiff;
+
+    $(".time").text( hours + ":" + minutes + ":" + seconds);
+    setTimeout(display, 1000);
+    }
+
+    function compile1() {
+{#        $('#compileForm').action ='http://127.0.0.1:8000/posts/api/compile';#}
+{#        this.action = 'http://127.0.0.1:8000/posts/api/compile';#}
+        $('#prog_type').val('compile');
+        return true;
+    }
+    function submit1() {
+{#        $('#compileForm').action ='http://127.0.0.1:8000/posts/api/compile';#}
+{#        this.action = 'http://127.0.0.1:8000/posts/api/compile';#}
+        $('#prog_type').val('submit');
+        return true;
+    }
+    function run1(){
+{#     $('#compileForm').action ='http://127.0.0.1:8000/posts/api/run';#}
+{#        this.action = 'http://127.0.0.1:8000/posts/api/run';#}
+        $('#prog_type').val('run');
+        return true;
+    }
+    $('#compileForm').submit(function(){
+            $(this).ajaxSubmit(signup_options);
+
+         return false;
+     });
+    function  dispError() {
+        $('#errors').html('Encountered errors');
+    }
+    function showRequest(formData, jqForm, options) {
+{#        var text = $('.ace_text-layer').text();#}
+        var text = "";
+        $('.ace_text-layer>div').each(function(){ console.log("item "); text += '\n' + this.innerText; });
+
+        $('#program').val(text);
+
+        if($('#prog_type').val()=='compile')
+                options.url ='http://127.0.0.1:8000/hashitCompile/api/compile';
+        else if($('#prog_type').val()=='run')
+                options.url = 'http://127.0.0.1:8000/hashitCompile/api/run';
+        else if($('#prog_type').val()=='submit')
+                options.url = 'http://127.0.0.1:8000/hashitCompile/api/submit';
+
+        return true;
+    }
+    function  successful(responseText, statusText, xhr, $form) {
+        if(responseText.typeOp=='compile') {
+            if (responseText.compiled == true) {
+                $('#errors').html('');
+                $('#output3').html("<i class='fa fa-check-circle' style=\"font-size:24px;color:green\"></i>");
+                $('#output3').append(" Successfully Compiled<br>");
+
+            } else {
+                $('#output3').html('');
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:24px;color:red\"></i>Compilation Erros<br>" + responseText.errors);
+            }
+        }else if(responseText.typeOp=='run'){
+            if(responseText.executed == true) {
+                $('#output3').html("<i class='fa fa-check-circle' style=\"font-size:24px;color:green\"></i>Ran successfully");
+                $('#output3').html("<h3>Output<\/h3><br>"+responseText.output);
+                $('#errors').html('');
+            }else if(responseText.compiled==false){
+                $('#output3').html('');
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:24px;color:red\"></i>Compile the file first<br>" );
+            }else{
+                $('#errors').html("<i class=\"fa fa-exclamation-triangle\" style=\"font-size:24px;color:orangered\"></i>"+ "Time Limit Exceeded<br>" );
+            }
+        }else if(responseText.typeOp=='submit'){
+            if(responseText.executed == true) {
+                $('#output3').html('');
+                $('#errors').html('');
+
+                for (t in responseText.cases){
+                    if(responseText.cases[t].match) {
+                        $('#output3').append("<i class='fa fa-check-circle' style=\"font-size:24px;color:green\"></i>"+ t +'<br>');
+                    }else if(responseText.cases[t].executed){
+                        $('#errors').append("<i class=\"fa fa-times-circle\" style=\"font-size:24px;color:red\"></i>"+t+" Wrong Answer<br>" );
+                    }else{
+                        $('#errors').append("<i class=\"fa fa-exclamation-triangle\" style=\"font-size:24px;color:orangered\"></i>"+t+" Time Limit Exceeded<br>" );
+                    }
+                }
+
+            }
+            else if(responseText.compiled==false){
+                $('#output3').html('');
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:32px;color:red\"></i>Compile the file first<br>" );
+            }
+        }
+
+        return false;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+</head>
+<body>
+<p id="output3"></p><br>
+<p id="errors"></p>
+<form  id="compileForm" method="POST" >
+    {% csrf_token %}
+    <div class="form-group">
+	Prog Name :<input name='prog_name' >
+	<select name='language'>
+
+		<option value="C">C</option>
+		<option value="Java">Java</option>
+	</select>
+	<br>
+	<textarea name='program' id='program' rows="30" cols="100"></textarea>
+    <textarea name='prog_input' id='prog_input' rows="10" cols="20"></textarea>
+	<br>
+        </div>
+    <input name="prog_type" id="prog_type" hidden>
+    <button type="submit" class="btn btn-primary" onclick="javascript:compile1()" name="compile" >Compile</button>
+    <button type="submit" class="btn btn-primary" onclick="javascript:run1()" name="run" >Run</button>
+{#    #}
+{#    #}
+</form>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.js"></script>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+<script>
+    var signup_options = {
+        target:        '#output3',   // target element(s) to be updated with server response
+        beforeSubmit:  showRequest,  // pre-submit callback
+        success:       successful,  // post-submit callback
+         error : dispError
+
+            };
+
+
+    function compile1() {
+{#        $('#compileForm').action ='http://127.0.0.1:8000/posts/api/compile';#}
+{#        this.action = 'http://127.0.0.1:8000/posts/api/compile';#}
+        $('#prog_type').val('compile');
+        return true;
+    }
+    function run1(){
+{#     $('#compileForm').action ='http://127.0.0.1:8000/posts/api/run';#}
+{#        this.action = 'http://127.0.0.1:8000/posts/api/run';#}
+        $('#prog_type').val('run');
+        return true;
+    }
+    $('#compileForm').submit(function(){
+            $(this).ajaxSubmit(signup_options);
+
+         return false;
+     });
+    function  dispError() {
+        $('#errors').html('Encountered errors');
+    }
+    function showRequest(formData, jqForm, options) {
+
+        if($('#prog_type').val()=='compile')
+                options.url ='http://127.0.0.1:8000/hashitCompile/api/compile';
+        else if($('#prog_type').val()=='run')
+                options.url = 'http://127.0.0.1:8000/hashitCompile/api/run';
+
+        return true;
+    }
+    function  successful(responseText, statusText, xhr, $form) {
+        if(responseText.typeOp=='compile') {
+            if (responseText.compiled == true) {
+                $('#errors').html('');
+                $('#output3').html("<i class='fa fa-check-circle' style=\"font-size:48px;color:green\"></i>");
+                $('#output3').append(" Successfully Compiled<br>");
+
+            } else {
+                $('#output3').html('');
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:48px;color:red\"></i>Compilation Erros<br>" + responseText.errors);
+            }
+        }else if(responseText.typeOp=='run'){
+            if(responseText.executed == true) {
+                $('#output3').html("<i class='fa fa-check-circle' style=\"font-size:48px;color:green\"></i>Ran successfully");
+                $('#output3').html("<h3>Output<\/h3><br>"+responseText.output);
+                $('#errors').html('');
+            }else if(responseText.compiled==false){
+                $('#output3').html('');
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:48px;color:red\"></i>Compile the file first<br>" );
+            }else{
+                $('#errors').html("<i class=\"fa fa-times-circle\" style=\"font-size:48px;color:red\"></i>Time Limit Exceeded<br>" );
+            }
+        }
+
+        return false;
+    }
+</script>
+
+</body>
+</html>
