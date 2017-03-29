@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x)=-ijboz@mu1evka4x*6$p=%k8ego2u1a_(y-t^70^b*()920'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,18 +80,7 @@ WSGI_APPLICATION = 'HashitCompiler.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'compilerdb',
-        'USER': 'djangouser',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-        'OPTIONS':{
-            'autocommit' : True,
-        },
-    }
+    #
 }
 
 
